@@ -89,7 +89,7 @@ def handle_code(code, title):
     """)
     session_local.globals = dict(globals())
     if title:
-        put_markdown('## %s' % title)
+        put_markdown(f'## {title}')
 
     for p in gen_snippets(code):
         with use_scope() as scope:

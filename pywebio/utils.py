@@ -20,13 +20,11 @@ def pyinstaller_datas(cli_args=False):
     """Return data files included in the PyWebIO to be added to pyinstaller bundle."""
     datas = [
         (STATIC_PATH, 'pywebio/html'),
-        (normpath(STATIC_PATH + '/../platform/tpl'), 'pywebio/platform/tpl')
+        (normpath(f'{STATIC_PATH}/../platform/tpl'), 'pywebio/platform/tpl'),
     ]
+
     if cli_args:
-        args = ''
-        for item in datas:
-            args += ' --add-data %s%s%s' % (item[0], os.pathsep, item[1])
-        return args
+        return ''.join(f' --add-data {item[0]}{os.pathsep}{item[1]}' for item in datas)
     return datas
 
 
@@ -113,7 +111,7 @@ class ObjectDictProxy:
 
     def __getattr__(self, item):
         """访问一个不存在的属性时触发"""
-        assert not item.startswith('_'), 'object has no attribute %s' % item
+        assert not item.startswith('_'), f'object has no attribute {item}'
         return self._dict.get(item, None)
 
     def __delattr__(self, item):
@@ -147,7 +145,7 @@ def catch_exp_call(func, logger):
     try:
         return func()
     except Exception:
-        logger.exception("Error when invoke `%s`" % func)
+        logger.exception(f"Error when invoke `{func}`")
 
 
 def iscoroutinefunction(object):
@@ -186,11 +184,12 @@ def get_function_attr(func, attrs):
 
     while isinstance(func, functools.partial):
         func = func.func
-        values.update({
+        values |= {
             attr: getattr(func, attr)
             for attr in attrs
             if hasattr(func, attr) and attr not in values
-        })
+        }
+
 
     return values
 

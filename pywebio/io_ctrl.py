@@ -28,7 +28,7 @@ def scope2dom(name, no_css_selector=False):
     if no_css_selector:
         selector = ''
 
-    return '%spywebio-scope-%s' % (selector, name)
+    return f'{selector}pywebio-scope-{name}'
 
 
 class Output:
@@ -47,7 +47,9 @@ class Output:
             return obj.data
 
         if not ignore_error:
-            raise TypeError('Object of type  %s is not JSON serializable' % obj.__class__.__name__)
+            raise TypeError(
+                f'Object of type  {obj.__class__.__name__} is not JSON serializable'
+            )
 
     @classmethod
     def dump_dict(cls, data):
@@ -148,7 +150,7 @@ class Output:
 
         """
         self.spec.setdefault('style', '')
-        self.spec['style'] += ';%s' % css_style
+        self.spec['style'] += f';{css_style}'
         return self
 
     def onclick(self, callback):
@@ -310,13 +312,13 @@ def trigger_onchange(event_data, onchange_funcs):
     onchange_func = onchange_funcs[name]
 
     task_id = get_current_task_id()
-    get_current_session().internal_save['onchange_trigger-' + task_id] = name  # used in `pywebio.input.input_update()`
+    get_current_session().internal_save[f'onchange_trigger-{task_id}'] = name
     try:
         onchange_func(event_data['value'])
     except Exception as e:
         logger.warning('Get %r in onchange function for name:"%s"', e, name)
     finally:
-        del get_current_session().internal_save['onchange_trigger-' + task_id]
+        del get_current_session().internal_save[f'onchange_trigger-{task_id}']
 
 
 @chose_impl
@@ -383,5 +385,4 @@ def input_event_handle(item_valid_funcs, form_valid_funcs, preprocess_funcs, onc
 
 def output_register_callback(callback, **options):
     """向当前会话注册回调函数"""
-    task_id = get_current_session().register_callback(callback, **options)
-    return task_id
+    return get_current_session().register_callback(callback, **options)

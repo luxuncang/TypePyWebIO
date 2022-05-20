@@ -185,6 +185,9 @@ def get_session_info_from_headers(headers):
     user_language = headers.get('Accept-Language', '').split(',', 1)[0].split(' ', 1)[0].split(';', 1)[0]
     server_host = headers.get('Host', '')
     origin = headers.get('Origin', '')
-    session_info = dict(user_agent=ua, user_language=user_language,
-                        server_host=server_host, origin=origin)
-    return session_info
+    return dict(
+        user_agent=ua,
+        user_language=user_language,
+        server_host=server_host,
+        origin=origin,
+    )

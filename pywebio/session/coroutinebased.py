@@ -16,8 +16,7 @@ class WebIOFuture:
         self.coro = coro
 
     def __iter__(self):
-        result = yield self
-        return result
+        return (yield self)
 
     __await__ = __iter__  # make compatible with 'await' expression
 
@@ -281,11 +280,8 @@ class Task:
     @staticmethod
     def gen_coro_id(coro=None):
         """生成协程id"""
-        name = 'coro'
-        if hasattr(coro, '__name__'):
-            name = coro.__name__
-
-        return '%s-%s' % (name, random_str(10))
+        name = coro.__name__ if hasattr(coro, '__name__') else 'coro'
+        return f'{name}-{random_str(10)}'
 
     def __init__(self, coro, session: CoroutineBasedSession, on_coro_stop=None):
         """
@@ -315,10 +311,7 @@ class Task:
         coro_yield = None
         with self.session_context():
             try:
-                if throw_exp:
-                    coro_yield = self.coro.throw(result)
-                else:
-                    coro_yield = self.coro.send(result)
+                coro_yield = self.coro.throw(result) if throw_exp else self.coro.send(result)
             except StopIteration as e:
                 if len(e.args) == 1:
                     self.result = e.args[0]
@@ -364,5 +357,4 @@ class Task:
             logger.warning('Task[%s] was destroyed but it is pending!', self.coro_id)
 
     def task_handle(self):
-        handle = TaskHandler(close=self.close, closed=lambda: self.task_closed)
-        return handle
+        return TaskHandler(close=self.close, closed=lambda: self.task_closed)

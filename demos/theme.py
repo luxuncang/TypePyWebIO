@@ -68,40 +68,59 @@ def form():
         }
     ]
 
-    input_group('Input group', [
-        input('Text', type=TEXT, datalist=['candidate-%s' % i for i in range(10)], name='text', required=True,
-              help_text='Required'),
-        input('Number', type=NUMBER, value="42", name='number'),
-        input('Float', type=FLOAT, name='float'),
-        input('Password', type=PASSWORD, name='password'),
-
-        textarea('Textarea', rows=3, maxlength=20, name='textarea',
-                 placeholder="The maximum number of characters you can input is 20"),
-
-        textarea('Code', name='code', code={'mode': 'python'},
-                 value='import pywebio\npywebio.output.put_text("hello world")'),
-
-        select('Multiple select', options, name='select-multiple', multiple=True),
-
-        select('Select', options, name='select'),
-
-        checkbox('Inline checkbox', options, inline=True, name='checkbox-inline'),
-
-        checkbox('Checkbox', options, name='checkbox'),
-
-        radio('Inline radio', options, inline=True, name='radio-inline'),
-
-        radio('Radio', options, inline=False, name='radio'),
-
-        file_upload('File upload', name='file_upload', max_size='10m'),
-
-        actions('Actions', [
-            {'label': 'Submit', 'value': 'submit'},
-            {'label': 'Disabled', 'disabled': True},
-            {'label': 'Reset', 'type': 'reset', 'color': 'warning'},
-            {'label': 'Cancel', 'type': 'cancel', 'color': 'danger'},
-        ], name='actions'),
-    ])
+    input_group(
+        'Input group',
+        [
+            input(
+                'Text',
+                type=TEXT,
+                datalist=[f'candidate-{i}' for i in range(10)],
+                name='text',
+                required=True,
+                help_text='Required',
+            ),
+            input('Number', type=NUMBER, value="42", name='number'),
+            input('Float', type=FLOAT, name='float'),
+            input('Password', type=PASSWORD, name='password'),
+            textarea(
+                'Textarea',
+                rows=3,
+                maxlength=20,
+                name='textarea',
+                placeholder="The maximum number of characters you can input is 20",
+            ),
+            textarea(
+                'Code',
+                name='code',
+                code={'mode': 'python'},
+                value='import pywebio\npywebio.output.put_text("hello world")',
+            ),
+            select(
+                'Multiple select',
+                options,
+                name='select-multiple',
+                multiple=True,
+            ),
+            select('Select', options, name='select'),
+            checkbox(
+                'Inline checkbox', options, inline=True, name='checkbox-inline'
+            ),
+            checkbox('Checkbox', options, name='checkbox'),
+            radio('Inline radio', options, inline=True, name='radio-inline'),
+            radio('Radio', options, inline=False, name='radio'),
+            file_upload('File upload', name='file_upload', max_size='10m'),
+            actions(
+                'Actions',
+                [
+                    {'label': 'Submit', 'value': 'submit'},
+                    {'label': 'Disabled', 'disabled': True},
+                    {'label': 'Reset', 'type': 'reset', 'color': 'warning'},
+                    {'label': 'Cancel', 'type': 'cancel', 'color': 'danger'},
+                ],
+                name='actions',
+            ),
+        ],
+    )
 
 
 def output_widgets():

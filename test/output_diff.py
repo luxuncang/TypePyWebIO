@@ -4,7 +4,7 @@ import sys
 
 def diff_file(file_a, file_b):
     if open(file_a).read() != open(file_b).read():
-        cmd = 'diff %s %s' % (file_a, file_b)
+        cmd = f'diff {file_a} {file_b}'
         print('#' * 4, cmd, '#' * 4)
         os.system(cmd)
         return True

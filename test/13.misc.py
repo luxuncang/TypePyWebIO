@@ -229,8 +229,15 @@ def test(server_proc: subprocess.Popen, browser: Chrome):
 def start_test_server():
     pywebio.enable_debug()
 
-    start_server([corobased, partial(threadbased)], port=8080, host='127.0.0.1', debug=True, cdn=False,
-                 static_dir=STATIC_PATH + '/image', reconnect_timeout=10)
+    start_server(
+        [corobased, partial(threadbased)],
+        port=8080,
+        host='127.0.0.1',
+        debug=True,
+        cdn=False,
+        static_dir=f'{STATIC_PATH}/image',
+        reconnect_timeout=10,
+    )
 
 
 if __name__ == '__main__':

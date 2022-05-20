@@ -145,7 +145,7 @@ def basic_output():
         put_buttons([('popup()', '')], onclick=[show_popup])
 
     def edit_row(choice, row):
-        put_text("You click %s button at row %s" % (choice, row), scope='table_cell_buttons')
+        put_text(f"You click {choice} button at row {row}", scope='table_cell_buttons')
 
     with use_scope('table_cell_buttons'):
         put_table([
@@ -318,7 +318,7 @@ def background_output():
 
     def background():
         for i in range(20):
-            put_text('%s ' % i, inline=True, scope='background')
+            put_text(f'{i} ', inline=True, scope='background')
 
     t = threading.Thread(target=background)
     register_thread(t)
@@ -331,7 +331,7 @@ async def coro_background_output():
 
     async def background():
         for i in range(20):
-            put_text('%s ' % i, inline=True, scope='background')
+            put_text(f'{i} ', inline=True, scope='background')
 
     return run_async(background())
 

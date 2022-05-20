@@ -125,7 +125,7 @@ _app_list_tpl = template.Template("""
 
 def default_index_page(path, base):
     urlpath = path[len(base):] or '/'
-    title = "Index of %s" % urlpath
+    title = f"Index of {urlpath}"
     dirs = [] if path == base else [('../', '')]  # (name, doc)
     files = []  # (name, doc)
     for f in os.listdir(path):
@@ -140,7 +140,7 @@ def default_index_page(path, base):
                 if 'main' in identifiers:
                     files.append([f[:-3], identifiers['main']])
         else:
-            dirs.append([(f + '/'), ''])
+            dirs.append([f'{f}/', ''])
 
     items = dirs + files
     max_name_width = max([len(n) for n, _ in items]+[0])
@@ -196,7 +196,7 @@ def _path_deploy(base, port=0, host='', static_dir=None, cdn=True, max_payload_s
     abs_base = os.path.normpath(os.path.abspath(base))
 
     cdn = cdn_validation(cdn, 'warn', stacklevel=4)  # if CDN is not available, warn user and disable CDN
-    cdn_url = '/_pywebio_static/' if not cdn else cdn
+    cdn_url = cdn or '/_pywebio_static/'
 
     register_session_implement(CoroutineBasedSession)
     register_session_implement(ThreadBasedSession)
@@ -277,9 +277,7 @@ def path_deploy(base, port=0, host='',
                 raise Finish(res)
 
             app_name = self.get_query_argument('app', 'index')
-            app = res.get(app_name) or res['index']
-
-            return app
+            return res.get(app_name) or res['index']
 
     gen.send(WSHandler)
     gen.close()

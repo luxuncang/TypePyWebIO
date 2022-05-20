@@ -32,10 +32,7 @@ def bkapp(doc):
     plot.line('time', 'temperature', source=source)
 
     def callback(attr, old, new):
-        if new == 0:
-            data = df
-        else:
-            data = df.rolling('{0}D'.format(new)).mean()
+        data = df if new == 0 else df.rolling('{0}D'.format(new)).mean()
         source.data = ColumnDataSource.from_df(data)
 
     slider = Slider(start=0, end=30, value=0, step=1, title="Smoothing by N Days")

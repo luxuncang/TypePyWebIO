@@ -18,14 +18,13 @@ def cdn_validation(cdn, level='warn', stacklevel=3):
     assert level in ('warn', 'error')
 
     if cdn is True and 'dev' in version:
-        if level == 'warn':
-            import warnings
-            warnings.warn("Default CDN is not supported in dev version. Ignore the CDN setting", PyWebIOWarning,
-                          stacklevel=stacklevel)
-            return False
-        else:
+        if level != 'warn':
             raise ValueError("Default CDN is not supported in dev version. Please host static files by yourself.")
 
+        import warnings
+        warnings.warn("Default CDN is not supported in dev version. Ignore the CDN setting", PyWebIOWarning,
+                      stacklevel=stacklevel)
+        return False
     return cdn
 
 
@@ -134,10 +133,10 @@ def print_listen_address(host, port):
         host = get_interface_ip(socket.AF_INET6)
 
     if ':' in host:  # ipv6
-        host = '[%s]' % host
+        host = f'[{host}]'
 
     if all_address:
         print('Running on all addresses.')
-        print('Use http://%s:%s/ to access the application' % (host, port))
+        print(f'Use http://{host}:{port}/ to access the application')
     else:
-        print('Running on http://%s:%s/' % (host, port))
+        print(f'Running on http://{host}:{port}/')

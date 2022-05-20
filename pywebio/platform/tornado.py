@@ -91,8 +91,7 @@ def _webio_handler(applications=None, cdn=True, reconnect_timeout=0, check_origi
 
         def get_app(self):
             app_name = self.get_query_argument('app', 'index')
-            app = applications.get(app_name) or applications['index']
-            return app
+            return applications.get(app_name) or applications['index']
 
         async def get(self, *args, **kwargs) -> None:
             # It's a simple http GET request
@@ -129,10 +128,9 @@ def _webio_handler(applications=None, cdn=True, reconnect_timeout=0, check_origi
                     break
 
                 # clean this session
-                logger.debug("session %s expired" % session_id)
+                logger.debug(f"session {session_id} expired")
                 cls._connections.pop(session_id, None)
-                session = cls._webio_sessions.pop(session_id, None)
-                if session:
+                if session := cls._webio_sessions.pop(session_id, None):
                     session.close(nonblock=True)
 
         @classmethod
@@ -206,7 +204,7 @@ def _webio_handler(applications=None, cdn=True, reconnect_timeout=0, check_origi
                 cls._connections[self.session_id] = self
                 cls.send_msg_to_client(self.session, self.session_id)
 
-            logger.debug('session id: %s' % self.session_id)
+            logger.debug(f'session id: {self.session_id}')
 
         def on_message(self, message):
             if isinstance(message, bytes):
@@ -254,14 +252,14 @@ def webio_handler(applications, cdn=True, reconnect_timeout=0, allowed_origins=N
 
 
 async def open_webbrowser_on_server_started(host, port):
-    url = 'http://%s:%s' % (host, port)
+    url = f'http://{host}:{port}'
     is_open = await wait_host_port(host, port, duration=20)
     if is_open:
-        logger.info('Try open %s in web browser' % url)
+        logger.info(f'Try open {url} in web browser')
         # webbrowser.open() may block, so invoke it in thread
         threading.Thread(target=webbrowser.open, args=(url,), daemon=True).start()
     else:
-        logger.error('Open %s in web browser failed.' % url)
+        logger.error(f'Open {url} in web browser failed.')
 
 
 def _setup_server(webio_handler, port=0, host='', static_dir=None, max_buffer_size=2 ** 20 * 200,

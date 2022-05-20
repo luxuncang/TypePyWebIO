@@ -353,7 +353,10 @@ def pin_on_change(name, onchange=None, clear=False, init_run=False, **callback_o
 
     .. versionadded:: 1.6
     """
-    assert not (onchange is None and clear is False), "When `onchange` is `None`, `clear` must be `True`"
+    assert (
+        onchange is not None or clear is not False
+    ), "When `onchange` is `None`, `clear` must be `True`"
+
     if onchange is not None:
         callback_id = output_register_callback(onchange, **callback_options)
         if init_run:

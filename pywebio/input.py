@@ -114,7 +114,7 @@ def _parse_args(kwargs, excludes=()):
     kwargs = {k: v for k, v in kwargs.items() if v is not None and k not in excludes}
     assert is_html_safe_value(kwargs.get('name', '')), '`name` can only contains a-z、A-Z、0-9、_、-'
 
-    kwargs.update(kwargs.get('other_html_attrs', {}))
+    kwargs |= kwargs.get('other_html_attrs', {})
     kwargs.pop('other_html_attrs', None)
 
     if kwargs.get('validate'):
@@ -443,7 +443,7 @@ def _parse_action_buttons(buttons):
             assert 'value' in act or act.get('type', 'submit') != 'submit' or act.get('disabled'), \
                 'actions item must have value key for submit type'
         elif isinstance(act, (list, tuple)):
-            assert len(act) in (2, 3, 4), 'actions item format error'
+            assert len(act) in {2, 3, 4}, 'actions item format error'
             act = dict(zip(('label', 'value', 'type', 'disabled'), act))
         else:
             act = dict(value=act, label=act)
@@ -740,7 +740,7 @@ def parse_input_update_spec(spec):
         assert key not in {'action', 'buttons', 'code', 'inline', 'max_size', 'max_total_size', 'multiple', 'name',
                            'onchange', 'type', 'validate'}, '%r can not be updated' % key
 
-    attributes = dict((k, v) for k, v in spec.items() if v is not None)
+    attributes = {k: v for k, v in spec.items() if v is not None}
     if 'options' in spec:
         attributes['options'] = _parse_select_options(spec['options'])
     return attributes
@@ -775,7 +775,7 @@ def input_update(name=None, **spec):
         put_text(location)  # ..demo-only
     """
     task_id = get_current_task_id()
-    k = 'onchange_trigger-' + task_id
+    k = f'onchange_trigger-{task_id}'
     if k not in get_current_session().internal_save:
         raise RuntimeError("`input_update()` can only be called in `onchange` callback.")
     trigger_name = get_current_session().internal_save[k]

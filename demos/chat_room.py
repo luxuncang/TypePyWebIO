@@ -55,7 +55,12 @@ async def main():
     @defer_call
     def on_close():
         online_users.remove(nickname)
-        chat_msgs.append(('📢', '`%s` leaves the room. %s users currently online' % (nickname, len(online_users))))
+        chat_msgs.append(
+            (
+                '📢',
+                f'`{nickname}` leaves the room. {len(online_users)} users currently online',
+            )
+        )
 
     refresh_task = run_async(refresh_msg(nickname, msg_box))
 

@@ -74,11 +74,15 @@ def load_notebook(resources=None, verbose=False, hide_banner=False, load_timeout
         </div>
         """.format(element_id=element_id)
 
-        js_gists.append(
-            "document.getElementById({element_id}).innerHTML = 'Load BokehJS complete.'".format(element_id=element_id))
-
-        js_gists.append('Bokeh.set_log_level("info");')
-        js_gists.append("console.log('Set bokeh log level to INFO because you set `output_notebook(verbose=True)`')")
+        js_gists.extend(
+            (
+                "document.getElementById({element_id}).innerHTML = 'Load BokehJS complete.'".format(
+                    element_id=element_id
+                ),
+                'Bokeh.set_log_level("info");',
+                "console.log('Set bokeh log level to INFO because you set `output_notebook(verbose=True)`')",
+            )
+        )
 
     put_html(requirejs_tpl % (html, '\n'.join(js_gists)), sanitize=False)
 

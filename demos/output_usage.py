@@ -160,7 +160,7 @@ async def main():
 
     @use_scope('table-callback')
     def edit_row(choice, row):
-        put_markdown("> You click `%s` button ar row `%s`" % (choice, row))
+        put_markdown(f"> You click `{choice}` button ar row `{row}`")
 
     put_table([
         ['Idx', 'Actions'],
@@ -183,7 +183,7 @@ async def main():
 
     @use_scope('button-callback')
     def btn_click(btn_val):
-        put_markdown("> You click `%s` button" % btn_val)
+        put_markdown(f"> You click `{btn_val}` button")
 
     put_buttons(['A', 'B', 'C'], onclick=btn_click)
     put_button("Click me", onclick=lambda: toast("Clicked"))

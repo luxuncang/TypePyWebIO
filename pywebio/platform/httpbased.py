@@ -138,9 +138,8 @@ class HttpHandler:
                 break
 
             # clean this session
-            logger.debug("session %s expired" % sid)
-            session = cls._webio_sessions.get(sid)
-            if session:
+            logger.debug(f"session {sid} expired")
+            if session := cls._webio_sessions.get(sid):
                 session.close(nonblock=True)
                 del cls._webio_sessions[sid]
 
@@ -256,13 +255,12 @@ class HttpHandler:
             webio_session_id = request_headers['webio-session-id']
             webio_session = cls._webio_sessions[webio_session_id]
 
-        if context.request_method() == 'POST':  # client push event
-            if context.request_json() is not None:
-                webio_session.send_client_event(context.request_json())
-                yield type(self).WAIT_MS_ON_POST / 1000.0  # <--- <--- <--- <--- <--- <--- <--- <--- <--- <--- <--- <---
-        elif context.request_method() == 'GET':  # client pull messages
-            pass
-
+        if (
+            context.request_method() == 'POST'
+            and context.request_json() is not None
+        ):
+            webio_session.send_client_event(context.request_json())
+            yield type(self).WAIT_MS_ON_POST / 1000.0  # <--- <--- <--- <--- <--- <--- <--- <--- <--- <--- <--- <---
         cls._webio_expire[webio_session_id] = time.time()
 
         self.interval_cleaning()

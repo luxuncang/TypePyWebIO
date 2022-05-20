@@ -206,8 +206,7 @@ def start_server(applications, port=8080, host='', cdn=True,
     if remote_access:
         start_remote_access_service(local_port=port)
 
-    use_tornado_wsgi = os.environ.get('PYWEBIO_DJANGO_WITH_TORNADO', True)
-    if use_tornado_wsgi:
+    if use_tornado_wsgi := os.environ.get('PYWEBIO_DJANGO_WITH_TORNADO', True):
         import tornado.wsgi
         container = tornado.wsgi.WSGIContainer(app)
         http_server = tornado.httpserver.HTTPServer(container, max_buffer_size=max_payload_size)

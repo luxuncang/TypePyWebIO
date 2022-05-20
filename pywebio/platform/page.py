@@ -60,7 +60,7 @@ def check_theme(theme):
     if not theme:
         return
 
-    theme_file = path.join(STATIC_PATH, 'css', 'bs-theme', theme + '.min.css')
+    theme_file = path.join(STATIC_PATH, 'css', 'bs-theme', f'{theme}.min.css')
     if not path.isfile(theme_file):
         raise RuntimeError("Can't find css file for theme `%s`" % theme)
 
@@ -73,11 +73,7 @@ def parse_app_metadata(func):
 
     doc = get_function_doc(func)
     parts = doc.strip().split('\n\n', 1)
-    if len(parts) == 2:
-        title, description = parts
-    else:
-        title, description = parts[0], ''
-
+    title, description = parts if len(parts) == 2 else (parts[0], '')
     if not meta.title:
         meta = meta._replace(title=title, description=description)
 
@@ -128,12 +124,10 @@ def get_static_index_content(apps, query_arguments=None):
     qs.pop('app', None)
     other_arguments = urllib.parse.urlencode(qs, doseq=True)
 
-    if other_arguments:
-        other_arguments = '&' + other_arguments
-    else:
-        other_arguments = None
-    content = _app_list_tpl.generate(apps_info=apps_info, other_arguments=other_arguments).decode('utf8')
-    return content
+    other_arguments = f'&{other_arguments}' if other_arguments else None
+    return _app_list_tpl.generate(
+        apps_info=apps_info, other_arguments=other_arguments
+    ).decode('utf8')
 
 
 def _generate_default_index_app(apps):
@@ -295,7 +289,7 @@ def config(*, title=None, description=None, theme=None, js_code=None, js_file=[]
                 func = partial(func)  # to make a copy of the function
                 for key, val in configs.items():
                     if val:
-                        setattr(func, '_pywebio_%s' % key, val)
+                        setattr(func, f'_pywebio_{key}', val)
             except Exception:
                 pass
             return func

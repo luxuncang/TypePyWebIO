@@ -345,16 +345,8 @@ def _get_output_spec(type, scope, position, **other_spec):
 
     :return dict: ``spec`` field of ``output`` command
     """
-    spec = dict(type=type)
-
-    # add non-None arguments to spec
-    spec.update({k: v for k, v in other_spec.items() if v is not None})
-
-    if not scope:
-        scope_name = get_scope()
-    else:
-        scope_name = scope
-
+    spec = dict(type=type) | {k: v for k, v in other_spec.items() if v is not None}
+    scope_name = scope or get_scope()
     spec['scope'] = scope2dom(scope_name)
     spec['position'] = position
 
@@ -473,7 +465,7 @@ def put_code(content, language='', rows=None, scope=None, position=OutputPositio
     out = put_markdown(code, scope=scope, position=position)
     if rows is not None:
         max_height = rows * 19 + 32  # 32 is the code css padding
-        out.style("max-height: %spx" % max_height)
+        out.style(f"max-height: {max_height}px")
     return out
 
 
@@ -665,7 +657,7 @@ def put_table(tdata, header=None, scope=None, position=OutputPosition.BOTTOM) ->
             cell = tdata[x][y]
             if isinstance(cell, span_):
                 tdata[x][y] = cell.content
-                span['%s,%s' % (x, y)] = dict(col=cell.col, row=cell.row)
+                span[f'{x},{y}'] = dict(col=cell.col, row=cell.row)
             elif not isinstance(cell, Output):
                 tdata[x][y] = str(cell)
 
@@ -799,10 +791,9 @@ def put_buttons(buttons, onclick, small=None, link_style=False, outline=False, g
     def click_callback(btn_idx):
         if isinstance(onclick, Sequence):
             return onclick[btn_idx]()
-        else:
-            btn_val = values[btn_idx]
-            if not btns[btn_idx].get('disabled'):
-                return onclick(btn_val)
+        btn_val = values[btn_idx]
+        if not btns[btn_idx].get('disabled'):
+            return onclick(btn_val)
 
     callback_id = output_register_callback(click_callback, **callback_options)
     spec = _get_output_spec('buttons', callback_id=callback_id, buttons=btns, small=small,
@@ -875,7 +866,7 @@ def put_image(src, format=None, title='', width=None, height=None,
 
     if isinstance(src, (bytes, bytearray)):
         b64content = b64encode(src).decode('ascii')
-        format = '' if format is None else ('image/%s' % format)
+        format = '' if format is None else f'image/{format}'
         format = html.escape(format, quote=True)
         src = "data:{format};base64, {b64content}".format(format=format, b64content=b64content)
 
@@ -909,10 +900,13 @@ def put_file(name, content, label=None, scope=None, position=OutputPosition.BOTT
     """
     if label is None:
         label = name
-    output = put_buttons(buttons=[label], link_style=True,
-                         onclick=[lambda: download(name, content)],
-                         scope=scope, position=position)
-    return output
+    return put_buttons(
+        buttons=[label],
+        link_style=True,
+        onclick=[lambda: download(name, content)],
+        scope=scope,
+        position=position,
+    )
 
 
 def put_link(name, url=None, app=None, new_window=False, scope=None,
@@ -927,7 +921,10 @@ def put_link(name, url=None, app=None, new_window=False, scope=None,
 
     The ``url`` and ``app`` parameters must specify one but not both
     """
-    assert bool(url is None) != bool(app is None), "Must set `url` or `app` parameter but not both"
+    assert (url is None) != (
+        app is None
+    ), "Must set `url` or `app` parameter but not both"
+
 
     href = 'javascript:WebIO.openApp(%r, %d)' % (app, new_window) if app is not None else url
     target = '_blank' if (new_window and url) else '_self'
@@ -961,7 +958,7 @@ def put_processbar(name, init=0, label=None, auto_close=False, scope=None,
 
     .. seealso:: use `set_processbar()` to set the progress of progress bar
     """
-    processbar_id = 'webio-processbar-%s' % name
+    processbar_id = f'webio-processbar-{name}'
     percentage = init * 100
     label = '%.1f%%' % percentage if label is None else label
     tpl = """<div class="progress" style="margin-top: 4px;">
@@ -985,7 +982,7 @@ def set_processbar(name, value, label=None):
     """
     from pywebio.session import run_js
 
-    processbar_id = 'webio-processbar-%s' % name
+    processbar_id = f'webio-processbar-{name}'
     percentage = value * 100
     label = '%.1f%%' % percentage if label is None else label
 
@@ -1577,7 +1574,7 @@ def style(outputs, css_style) -> Union[Output, OutputList]:
     for o in ol:
         assert isinstance(o, Output), 'style() only accept put_xxx() input'
         o.spec.setdefault('style', '')
-        o.spec['style'] += ';%s' % css_style
+        o.spec['style'] += f';{css_style}'
 
     return outputs
 

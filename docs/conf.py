@@ -80,9 +80,10 @@ def setup(app):
 from demos import config
 
 extlinks = {
-    'demo_host': (config.demo_host + '%s', 'demo_host'),
-    'charts_demo_host': (config.charts_demo_host + '%s', 'charts_demo_host')
+    'demo_host': (f'{config.demo_host}%s', 'demo_host'),
+    'charts_demo_host': (f'{config.charts_demo_host}%s', 'charts_demo_host'),
 }
+
 
 from sphinx.builders.html import StandaloneHTMLBuilder
 

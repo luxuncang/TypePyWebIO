@@ -44,7 +44,7 @@ class ThreadBasedSession(Session):
     def _get_task_id(thread: threading.Thread):
         tname = getattr(thread, '_target', 'task')
         tname = getattr(tname, '__name__', tname)
-        return '%s-%s' % (tname, id(thread))
+        return f'{tname}-{id(thread)}'
 
     def __init__(self, target, session_info, on_task_command=None, on_session_close=None, loop=None):
         """
@@ -225,8 +225,12 @@ class ThreadBasedSession(Session):
             return
 
         self.callback_mq = queue.Queue(maxsize=self.callback_mq_maxsize)
-        self.callback_thread = threading.Thread(target=self._dispatch_callback_event,
-                                                daemon=True, name='callback-' + random_str(10))
+        self.callback_thread = threading.Thread(
+            target=self._dispatch_callback_event,
+            daemon=True,
+            name=f'callback-{random_str(10)}',
+        )
+
         # self.register_thread(self.callback_thread)
         self.thread2session[id(self.callback_thread)] = self  # 用于在线程内获取会话
         event_mq = queue.Queue(maxsize=self.event_mq_maxsize)  # 回调线程内的用户事件队列
@@ -278,7 +282,7 @@ class ThreadBasedSession(Session):
             "not coroutine function or generator function. ")
 
         self._activate_callback_env()
-        callback_id = 'CB-%s-%s' % (get_function_name(callback, 'callback'), random_str(10))
+        callback_id = f"CB-{get_function_name(callback, 'callback')}-{random_str(10)}"
         self.callbacks[callback_id] = (callback, serial_mode)
         return callback_id
 
